@@ -1,0 +1,77 @@
+import { canReachValue, gcd, egcd, ceilDiv, floorDiv } from "./index";
+
+describe("math helpers", () => {
+  test("gcd should work", () => {
+    expect(gcd(6n, 9n)).toBe(3n);
+    expect(gcd(10n, 5n)).toBe(5n);
+    expect(gcd(17n, 13n)).toBe(1n);
+  });
+
+  test("egcd should satisfy a*x + b*y = gcd(a,b)", () => {
+    const a = 240n;
+    const b = 46n;
+    const r = egcd(a, b);
+    expect(a * r.x + b * r.y).toBe(r.divisor);
+    expect(r.divisor).toBe(gcd(a, b));
+  });
+
+  test("ceilDiv / floorDiv (positive)", () => {
+    expect(ceilDiv(10n, 3n)).toBe(4n);
+    expect(floorDiv(10n, 3n)).toBe(3n);
+    expect(ceilDiv(9n, 3n)).toBe(3n);
+    expect(floorDiv(9n, 3n)).toBe(3n);
+  });
+
+  test("ceilDiv / floorDiv (negative)", () => {
+    expect(ceilDiv(-10n, 3n)).toBe(-3n);
+    expect(floorDiv(-10n, 3n)).toBe(-4n);
+  });
+});
+
+describe("canReachValue", () => {
+  test("true when c equals a or b", () => {
+    expect(canReachValue(5n, 3n, 5n)).toBe(true);
+    expect(canReachValue(5n, 3n, 3n)).toBe(true);
+  });
+
+  test("false when c is less than both a and b", () => {
+    expect(canReachValue(5n, 3n, 2n)).toBe(false);
+    expect(canReachValue(10n, 10n, 9n)).toBe(false);
+  });
+
+  test("false when c is not divisible by gcd(a, b)", () => {
+    // gcd(6, 10) = 2, 9%2 != 0 => surely NO
+    expect(canReachValue(6n, 10n, 9n)).toBe(false);
+  });
+
+  test("reachable simple cases", () => {
+    // (6,9) -> a+=b => 15
+    expect(canReachValue(6n, 9n, 15n)).toBe(true);
+
+    // (2,4) -> a+=b => 6
+    expect(canReachValue(2n, 4n, 6n)).toBe(true);
+
+    expect(canReachValue(5n, 3n, 8n)).toBe(true);
+    expect(canReachValue(5n, 3n, 11n)).toBe(true);
+    expect(canReachValue(5n, 3n, 13n)).toBe(true);
+  });
+
+  test("unreachable cases", () => {
+    // from (6,9) we cannot reach 12 (numbers only grow, 12 is between 9 and 15)
+    expect(canReachValue(6n, 9n, 12n)).toBe(false);
+
+    // (7,5) 23 и 24 not reachable 
+    expect(canReachValue(7n, 5n, 23n)).toBe(false);
+    expect(canReachValue(7n, 5n, 24n)).toBe(false);
+  });
+
+  test("bigint large c should not crash", () => {
+    // check for large numbers
+    // (1,1) reaches Fibonacci number: 34 is in the sequence
+    expect(canReachValue(1n, 1n, 34n)).toBe(true);
+
+    // large number: here we do not guarantee YES/NO in advance with complex logic,
+    // but at least we run the function to ensure it does not crash
+    expect(typeof canReachValue(123456789n, 987654321n, 10n ** 30n)).toBe("boolean");
+  });
+});
