@@ -50,11 +50,9 @@ function floorDiv(n: bigint, d: bigint): bigint {
 }
 
 function canReachValue(a: bigint, b: bigint, c: bigint): boolean {
-    // result will be true if the one of the values is already equal to c
     if (c === a || c === b)
         return true;
 
-    // result will be false if c is smaller than a or b because a and be will never become smaller.
     if (c < a && c < b)
         return false;
 

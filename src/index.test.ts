@@ -40,15 +40,12 @@ describe("canReachValue", () => {
   });
 
   test("false when c is not divisible by gcd(a, b)", () => {
-    // gcd(6, 10) = 2, 9%2 != 0 => surely NO
     expect(canReachValue(6n, 10n, 9n)).toBe(false);
   });
 
   test("reachable simple cases", () => {
-    // (6,9) -> a+=b => 15
     expect(canReachValue(6n, 9n, 15n)).toBe(true);
 
-    // (2,4) -> a+=b => 6
     expect(canReachValue(2n, 4n, 6n)).toBe(true);
 
     expect(canReachValue(5n, 3n, 8n)).toBe(true);
@@ -57,21 +54,14 @@ describe("canReachValue", () => {
   });
 
   test("unreachable cases", () => {
-    // from (6,9) we cannot reach 12 (numbers only grow, 12 is between 9 and 15)
     expect(canReachValue(6n, 9n, 12n)).toBe(false);
 
-    // (7,5) 23 и 24 not reachable 
     expect(canReachValue(7n, 5n, 23n)).toBe(false);
     expect(canReachValue(7n, 5n, 24n)).toBe(false);
   });
 
   test("bigint large c should not crash", () => {
-    // check for large numbers
-    // (1,1) reaches Fibonacci number: 34 is in the sequence
     expect(canReachValue(1n, 1n, 34n)).toBe(true);
-
-    // large number: here we do not guarantee YES/NO in advance with complex logic,
-    // but at least we run the function to ensure it does not crash
     expect(typeof canReachValue(123456789n, 987654321n, 10n ** 30n)).toBe("boolean");
   });
 });
